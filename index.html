@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+	<head>
+		<script src="angular.min.js"></script>
+		<title>Greetings</title>
+		<style type="text/css">
+			td {border: 1px solid black;}
+		</style>
+	</head>
+	<body ng-app="testApp">
+		<div ng-controller="masterController">
+			<h2>The Pet List</h2>
+			<table>
+				<thead>
+					<th>Pet Name</th><th>Pet Age</th><th>Pet Type</th><th>Owner</th>
+				</thead>
+				<tr ng-repeat="pet in pets">
+					<td>{{ pet.name }}</td>
+					<td>{{ pet.age }}</td>
+					<td>{{ pet.type }}</td>
+					<td>{{ pet.owner_name }}</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+	<script>
+		var testApp = angular.module( 'testApp', [] );
+		(function(app){
+			"use strict";
+			testApp.service( "Data", [ '$http',
+				function( $http )
+				{
+					this.pets = null;
+
+					var service = {
+						getPets: function () 
+						{   
+							return $http.get('http://localhost/pet').then();
+						}
+					}
+					return service;
+				}
+			]);
+
+			testApp.controller( 'masterController',	function MasterController( Data, $scope ) {
+				var controller = this;
+
+				this.$onInit = function(){
+					Data.getPets().then(function(response){
+						$scope.pets = response.data;
+					});
+				};
+			});
+		})(testApp)
+	</script>
+</html>
